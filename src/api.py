@@ -221,7 +221,7 @@ def solve_math():
 
 @app.route('/api/geminium/ask', methods=['POST'])
 @limiter.limit("1 per second")
-def solve_math():
+def ask_question():
     ip = request.headers.get('cf-connecting-ip')
     prompts = []
     try:
