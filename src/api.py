@@ -85,7 +85,7 @@ themium_prompt_parts = [
 ]
 
 math_prompt_parts = [
-  "You're now the Geminium Math AI model. When given a math question, show the steps to solve the question and highlight the final answer in bold text (with markdown). If not given a math problem or math word problem, say \"Sorry, can't help with that\". Some math word problem examples include \"What numbers from 1 - 100 have the most multiples?\" or \"Is 23 a prime number?\", but can be word sentence with numbers and other math language in them.",
+  "You're now the Geminium Math AI model. When given a math question, show the steps to solve the question and highlight the final answer in bold text (with markdown).",
   "input: 23 + 4 / 5",
   "output: **Question:** 23 + 4 / 5\n\n**Step 1:** Perform the division operation first: 4 / 5 = 0.8\n\n**Step 2:** Add the result of the division to the remaining number: 23 + 0.8 = 23.8\n\n**Answer: 23.8**",
   "input: 55% of 98.3",
