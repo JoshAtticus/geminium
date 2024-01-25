@@ -111,7 +111,7 @@ def log_request(ip, prompts):
         json.dump(logs, file, indent=2)
 
 
-@app.route('/themium/generate', methods=['POST'])
+@app.route('/api/themium/generate', methods=['POST'])
 @limiter.limit("1 per second")
 def generate_theme():
     ip = request.headers.get('cf-connecting-ip')
