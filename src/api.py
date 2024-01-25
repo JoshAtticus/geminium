@@ -84,6 +84,52 @@ themium_prompt_parts = [
   "output: ",
 ]
 
+math_prompt_parts = [
+  "You're now the Geminium Math AI model. When given a math question, show the steps to solve the question and highlight the final answer in bold text (with markdown). If not given a math problem or math word problem, say \"Sorry, can't help with that\". Some math word problem examples include \"What numbers from 1 - 100 have the most multiples?\" or \"Is 23 a prime number?\", but can be word sentence with numbers and other math language in them.",
+  "input: 23 + 4 / 5",
+  "output: **Question:** 23 + 4 / 5\n\n**Step 1:** Perform the division operation first: 4 / 5 = 0.8\n\n**Step 2:** Add the result of the division to the remaining number: 23 + 0.8 = 23.8\n\n**Answer: 23.8**",
+  "input: 55% of 98.3",
+  "output: **Question:** 55% of 98.3\n\n**Step 1:** Convert 55% to decimal form: 55% = 55/100 = 0.55\n\n**Step 2:** Multiply the decimal form of the percentage by the number: 0.55 * 98.3 = 53.665\n\n**Answer: 53.665**",
+  "input: 2 + 1",
+  "output: **Question:** 2 + 1\n\n**Step 1:** Add the two numbers: 2 + 1 = 3\n\n**Answer: 3**",
+  "input: 98 billion 320 million 22 thousand 3 hundred and 44 as a number",
+  "output: **Question:** 98 billion 320 million 22 thousand 3 hundred and 44 as a number\n\n**Answer: 98,320,022,344**",
+  "input: Is 23 a prime number?",
+  "output: **Question:** Is 23 a prime number?\n\n**Answer: Yes**",
+  "input: ",
+  "output: ",
+]
+
+ask_prompt_parts = [
+  "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics.",
+  "input: Who was the 43rd president of the United States?",
+  "output: The 43rd president of the United States was **George W. Bush**. He was president from the **20th of January 2001** to to the **20th of January 2009**.",
+  "input: When was the first Google Pixel released? What colours did it come in?",
+  "output: The first Google Pixel was released on October 20, 2016. It came in three colors: Quite Black, Really Blue, and Very Silver.",
+  "input: What were the specs of the first iPhone?",
+  "output: * 3.5-inch TFT touchscreen display with a resolution of 320x480 pixels\n* 2-megapixel rear camera with fixed focus and no flash\n* VGA front-facing camera\n* 4GB or 8GB of storage\n* 128MB of RAM\n* 412MHz ARM 1176JZ-F processor\n* Wi-Fi (802.11b/g), Bluetooth 2.0, and EDGE connectivity\n* 1,400mAh lithium-ion battery",
+  "input: How many bananas have been sold in Australia?",
+  "output: It is impossible to provide an accurate answer to this question, as there is no publicly available data on the total number of bananas sold in Australia.",
+  "input: What's 21 + 89?",
+  "output: 110 \n\n*By the way, if you want more accurate and more detailed math answers, try @Geminium math (the question you want to ask)*",
+  "input: What is the combined voltage of 3 standard alkaline AA batteries?",
+  "output: 4.5 volts",
+  "input: Can you power a normal Red LED with an AAA battery?",
+  "output: Yes, you can power a normal Red LED with an AAA battery. A standard AAA battery provides 1.5 volts of power, which is enough to power a normal Red LED, which typically requires around 2 volts to operate.",
+  "input: How many iPhone 3G's worth of battery capacity is in a Google Pixel 6 Pro?",
+  "output: The Google Pixel 6 Pro has a battery capacity of 5,003mAh, while the iPhone 3G has a battery capacity of 1,150mAh. Therefore, the Google Pixel 6 Pro has a battery capacity of approximately 4.35 iPhone 3Gs.",
+  "input: What is the highest recorded gas price in history and where was it?",
+  "output: The highest recorded gas price in history was **$10.77 per gallon**, in **Humboldt, California, United States** on June 14, 2022.",
+  "input: When is your data training cutoff?",
+  "output: My training cutoff is **April 2023**. This means that I do not have access to real-time information or data past this date.",
+  "input: What is the most used emoji as of 2021?",
+  "output: The most used emoji as of 2021 was **\"Tears of Joy\"** 😂.",
+  "input: How many users does Reddit have in 2022 as compared to 2012?",
+  "output: In 2022, Reddit had **430 million** active users, compared to **130 million** active users in 2012. This represents an increase of **230 million** active users.",
+  "input: ",
+  "output: ",
+]
+
 themium_request_schema = {
     "type": "object",
     "properties": {
@@ -92,23 +138,43 @@ themium_request_schema = {
     "required": ["style"]
 }
 
+math_request_schema = {
+    "type": "object",
+    "properties": {
+        "question": {"type": "string"}
+    },
+    "required": ["question"]
+}
+
+ask_request_schema = {
+    "type": "object",
+    "properties": {
+        "question": {"type": "string"}
+    },
+    "required": ["question"]
+}
+
 limiter = Limiter(app, default_limits=["3 per minute"])
 
 logs_file = 'logs.json'
 
-def log_request(ip, prompts):
+def log_request(ip, prompts, api_command):
     logs = {}
     if os.path.exists(logs_file):
         with open(logs_file) as file:
             logs = json.load(file)
     
     if ip not in logs:
-        logs[ip] = []
+        logs[ip] = {}
     
-    logs[ip].extend(prompts)
+    if api_command not in logs[ip]:
+        logs[ip][api_command] = []
+
+    logs[ip][api_command].extend(prompts)
     
     with open(logs_file, 'w') as file:
         json.dump(logs, file, indent=2)
+
 
 
 @app.route('/api/themium/generate', methods=['POST'])
@@ -125,11 +191,53 @@ def generate_theme():
     user_style = request.json['style']
     prompts.append(user_style)
 
-    log_request(ip, prompts)
+    log_request(ip, [user_style], '/api/themium/generate')
 
     themium_prompt_parts.append(f"{user_style}")
     
     response = model.generate_content(themium_prompt_parts)
+    return response.text
+
+@app.route('/api/geminium/math', methods=['POST'])
+@limiter.limit("1 per second")
+def solve_math():
+    ip = request.headers.get('cf-connecting-ip')
+    prompts = []
+    try:
+        # Validate the JSON payload against the schema
+        validate(request.json, math_request_schema)
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
+    user_question = request.json['question']
+    prompts.append(user_question)
+
+    log_request(ip, [user_question], '/api/geminium/math')
+
+    math_prompt_parts.append(f"{user_question}")
+    
+    response = model.generate_content(math_prompt_parts)
+    return response.text
+
+@app.route('/api/geminium/ask', methods=['POST'])
+@limiter.limit("1 per second")
+def solve_math():
+    ip = request.headers.get('cf-connecting-ip')
+    prompts = []
+    try:
+        # Validate the JSON payload against the schema
+        validate(request.json, ask_request_schema)
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
+    user_question = request.json['question']
+    prompts.append(user_question)
+
+    log_request(ip, [user_question], '/api/geminium/ask')
+
+    math_prompt_parts.append(f"{user_question}")
+    
+    response = model.generate_content(ask_prompt_parts)
     return response.text
 
 
