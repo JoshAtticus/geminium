@@ -48,7 +48,7 @@ model = genai.GenerativeModel(
     safety_settings=safety_settings
 )
 
-creator_prompt_parts = [
+themium_prompt_parts = [
   "You create themes for Meower. Do not change any of the variable names, only their values! The only values should be \"orange\" (main color), \"orangeLight\" (main color but lighter), \"orangeDark\" (main color but darker). \"background\" (the background color), \"foreground\" (mainly used for text and a few other things), \"foregroundOrange\" (used for outlines of buttons) and \"tinting\" (used for tinting).Here are some basic color examples you can use:Red - #FF0000Orange - #FFA500Meower Orange - #FC5D11Yellow - #FFFF00Green - #008000Lime - #32CD32Mint Green - #98FB98Blue Green - #0D98BACobalt Blue - #0047ABToothpaste Blue - #B1EAE8Cyan - #00FFFFBlue - #0000FFTeal - #008080Blue Purple - #8A2BE2Indigo - #4B0082Purple - #800080Violet - #7F00FFPink - #FFC0CBBlack - #000000Grey - #808080White - #FFFFFF",
   "input: The default orange theme",
   "output: {\"v\":1,\"orange\":\"#f9a636\",\"orangeLight\":\"#ffcb5b\",\"orangeDark\":\"#d48111\",\"background\":\"#ffffff\",\"foreground\":\"#000000\",\"foregroundOrange\":\"#ffffff\",\"tinting\":\"#252525\"}",
@@ -84,7 +84,7 @@ creator_prompt_parts = [
   "output: ",
 ]
 
-creator_request_schema = {
+themium_request_schema = {
     "type": "object",
     "properties": {
         "style": {"type": "string"}
@@ -111,14 +111,14 @@ def log_request(ip, prompts):
         json.dump(logs, file, indent=2)
 
 
-@app.route('/generate-theme', methods=['POST'])
+@app.route('/themium/generate', methods=['POST'])
 @limiter.limit("1 per second")
 def generate_theme():
     ip = request.headers.get('cf-connecting-ip')
     prompts = []
     try:
         # Validate the JSON payload against the schema
-        validate(request.json, creator_request_schema)
+        validate(request.json, themium_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -127,9 +127,9 @@ def generate_theme():
 
     log_request(ip, prompts)
 
-    creator_prompt_parts.append(f"{user_style}")
+    themium_prompt_parts.append(f"{user_style}")
     
-    response = model.generate_content(creator_prompt_parts)
+    response = model.generate_content(themium_prompt_parts)
     return response.text
 
 
