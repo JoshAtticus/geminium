@@ -235,7 +235,7 @@ def ask_question():
 
     log_request(ip, [user_question], '/api/geminium/ask')
 
-    math_prompt_parts.append(f"{user_question}")
+    ask_prompt_parts.append(f"{user_question}")
     
     response = model.generate_content(ask_prompt_parts)
     return response.text
