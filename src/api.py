@@ -63,6 +63,7 @@ ask_request_schema = {
 limiter = Limiter(app, default_limits=["3 per minute"])
 
 logs_file = "logs.json"
+tokens_file = "tokens.json"
 
 
 def log_request(ip, prompts, api_command):
@@ -82,6 +83,14 @@ def log_request(ip, prompts, api_command):
     with open(logs_file, "w") as file:
         json.dump(logs, file, indent=2)
 
+def is_valid_token(token):
+    tokens = {}
+    if os.path.exists(tokens_file):
+        with open(tokens_file) as file:
+            tokens = json.load(file)
+
+    return token in tokens
+
 
 @app.route("/api/themium/generate", methods=["POST"])
 @limiter.limit("1 per second")
@@ -96,6 +105,10 @@ def generate_theme():
 
     user_style = request.json["style"]
     prompts.append(user_style)
+
+    if "token" in request.headers and is_valid_token(request.headers["token"]):
+        response = model.generate_content(themium_prompt_parts)
+        return response.text
 
     log_request(ip, [user_style], "/api/themium/generate")
 
@@ -154,6 +167,10 @@ def solve_math():
     user_question = request.json["question"]
     prompts.append(user_question)
 
+    if "token" in request.headers and is_valid_token(request.headers["token"]):
+        response = model.generate_content(math_prompt_parts)
+        return response.text
+
     log_request(ip, [user_question], "/api/geminium/math")
 
     math_prompt_parts = [
@@ -190,6 +207,10 @@ def ask_question():
 
     user_question = request.json["question"]
     prompts.append(user_question)
+
+    if "token" in request.headers and is_valid_token(request.headers["token"]):
+        response = model.generate_content(ask_prompt_parts)
+        return response.text
 
     log_request(ip, [user_question], "/api/geminium/ask")
 
