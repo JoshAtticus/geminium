@@ -213,6 +213,8 @@ def ask_question():
         "output: The Google Pixel 6 Pro has a battery capacity of 5,003mAh, while the iPhone 3G has a battery capacity of 1,150mAh. Therefore, the Google Pixel 6 Pro has a battery capacity of approximately 4.35 iPhone 3Gs.",
         "input: What is the highest recorded gas price in history and where was it?",
         "output: The highest recorded gas price in history was **$10.77 per gallon**, in **Humboldt, California, United States** on June 14, 2022.",
+        "input: When is your data training cutoff?",
+        "output: My training cutoff is **April 2023**. This means that I do not have access to real-time information or data past this date.",
         "input: What is the most used emoji as of 2021?",
         'output: The most used emoji as of 2021 was **"Tears of Joy"** 😂.',
         "input: How many users does Reddit have in 2022 as compared to 2012?",
