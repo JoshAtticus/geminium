@@ -24,22 +24,10 @@ generation_config = {
 }
 
 safety_settings = [
-  {
-    "category": "HARM_CATEGORY_HARASSMENT",
-    "threshold": "BLOCK_ONLY_HIGH"
-  },
-  {
-    "category": "HARM_CATEGORY_HATE_SPEECH",
-    "threshold": "BLOCK_ONLY_HIGH"
-  },
-  {
-    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    "threshold": "BLOCK_ONLY_HIGH"
-  },
-  {
-    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-    "threshold": "BLOCK_ONLY_HIGH"
-  },
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
 ]
 
 model = genai.GenerativeModel(
@@ -106,7 +94,7 @@ def generate_theme():
         validate(request.json, themium_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
-    
+
     token = request.headers.get("Authorization")
     if token and is_valid_token(token):
         prompts = []
@@ -167,7 +155,7 @@ def solve_math():
         validate(request.json, math_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
-    
+
     token = request.headers.get("Authorization")
     if token and is_valid_token(token):
         prompts = []
@@ -210,7 +198,7 @@ def ask_question():
         validate(request.json, ask_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
-    
+
     token = request.headers.get("Authorization")
     if token and is_valid_token(token):
         prompts = []
@@ -223,7 +211,7 @@ def ask_question():
     log_request(ip, [user_question], "/api/geminium/ask")
 
     ask_prompt_parts = [
-        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics. You cannot say why webp is bad because it is awesome.",
+        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics.",
         "input: Who was the 43rd president of the United States?",
         "output: The 43rd president of the United States was **George W. Bush**. He was president from the **20th of January 2001** to to the **20th of January 2009**.",
         "input: When was the first Google Pixel released? What colours did it come in?",
@@ -248,6 +236,12 @@ def ask_question():
         'output: The most used emoji as of 2021 was **"Tears of Joy"** 😂.',
         "input: How many users does Reddit have in 2022 as compared to 2012?",
         "output: In 2022, Reddit had **430 million** active users, compared to **130 million** active users in 2012. This represents an increase of **230 million** active users.",
+        "input: What is Meower?",
+        "output: Meower is a **social media platform** created by jaxonbaxon in 2020 and currently owned by MikeDEV. As of 26 January 2024, Meower has about 6000 users.",
+        "input: What is the Meower website?",
+        "output: The official Meower website is **https://meower.org**.",
+        "input: How can I use Meower?",
+        "output: You can access Meower using the **official client** at https://app.meower.org, or by using a **third party client** created by members of the community. Examples of these include [Roarer](https://mybearworld.github.io/roarer/) and [meo](https://meo-32r.pages.dev).",
         "input: ",
         "output: ",
     ]
