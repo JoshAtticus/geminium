@@ -273,7 +273,7 @@ def ask_question():
 
 @app.route("/api/geminium/teachme", methods=["POST"])
 @limiter.limit("1 per second")
-def ask_question():
+def teachme_question():
     ip = request.headers.get("cf-connecting-ip")
     prompts = []
     try:
