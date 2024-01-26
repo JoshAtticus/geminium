@@ -83,13 +83,11 @@ def log_request(ip, prompts, api_command):
     with open(logs_file, "w") as file:
         json.dump(logs, file, indent=2)
 
-def is_valid_token(token):
-    tokens = {}
-    if os.path.exists(tokens_file):
-        with open(tokens_file) as file:
-            tokens = json.load(file)
 
-    return token in tokens
+def is_valid_token(token):
+    with open(tokens_file) as file:
+        tokens = json.load(file)
+        return token in tokens
 
 
 @app.route("/api/themium/generate", methods=["POST"])
@@ -102,14 +100,15 @@ def generate_theme():
         validate(request.json, themium_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
+    
+    token = request.headers.get("Authorization")
+    if token and is_valid_token(token):
+        prompts = []
+    else:
+        log_request(ip, prompts, "/api/geminium/ask")
 
     user_style = request.json["style"]
     prompts.append(user_style)
-
-    if "token" in request.headers and is_valid_token(request.headers["token"]):
-        return model.generate_content(prompts).text
-
-    log_request(ip, [user_style], "/api/themium/generate")
 
     themium_prompt_parts = [
         'You create themes for Meower. Do not change any of the variable names, only their values! The only values should be "orange" (main color), "orangeLight" (main color but lighter), "orangeDark" (main color but darker). "background" (the background color), "foreground" (mainly used for text and a few other things), "foregroundOrange" (used for outlines of buttons) and "tinting" (used for tinting).Here are some basic color examples you can use:Red - #FF0000Orange - #FFA500Meower Orange - #FC5D11Yellow - #FFFF00Green - #008000Lime - #32CD32Mint Green - #98FB98Blue Green - #0D98BACobalt Blue - #0047ABToothpaste Blue - #B1EAE8Cyan - #00FFFFBlue - #0000FFTeal - #008080Blue Purple - #8A2BE2Indigo - #4B0082Purple - #800080Violet - #7F00FFPink - #FFC0CBBlack - #000000Grey - #808080White - #FFFFFF',
@@ -162,6 +161,12 @@ def solve_math():
         validate(request.json, math_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
+    
+    token = request.headers.get("Authorization")
+    if token and is_valid_token(token):
+        prompts = []
+    else:
+        log_request(ip, prompts, "/api/geminium/ask")
 
     user_question = request.json["question"]
     prompts.append(user_question)
@@ -199,6 +204,12 @@ def ask_question():
         validate(request.json, ask_request_schema)
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
+    
+    token = request.headers.get("Authorization")
+    if token and is_valid_token(token):
+        prompts = []
+    else:
+        log_request(ip, prompts, "/api/geminium/ask")
 
     user_question = request.json["question"]
     prompts.append(user_question)
