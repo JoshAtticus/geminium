@@ -20,7 +20,7 @@ generation_config = {
     "temperature": 0.9,
     "top_p": 1,
     "top_k": 1,
-    "max_output_tokens": 700,
+    "max_output_tokens": 1000,
 }
 
 safety_settings = [
@@ -49,6 +49,12 @@ math_request_schema = {
 }
 
 ask_request_schema = {
+    "type": "object",
+    "properties": {"question": {"type": "string"}},
+    "required": ["question"],
+}
+
+teachme_request_schema = {
     "type": "object",
     "properties": {"question": {"type": "string"}},
     "required": ["question"],
@@ -262,6 +268,53 @@ def ask_question():
     ask_prompt_parts.append(f"{user_question}")
 
     response = model.generate_content(ask_prompt_parts)
+    return response.parts[0].text
+
+
+@app.route("/api/geminium/teachme", methods=["POST"])
+@limiter.limit("1 per second")
+def ask_question():
+    ip = request.headers.get("cf-connecting-ip")
+    prompts = []
+    try:
+        # Validate the JSON payload against the schema
+        validate(request.json, teachme_request_schema)
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
+    token = request.headers.get("Authorization")
+    if token and is_valid_token(token):
+        prompts = []
+    else:
+        log_request(ip, prompts, "/api/geminium/teachme")
+
+    user_question = request.json["question"]
+    prompts.append(user_question)
+
+    log_request(ip, [user_question], "/api/geminium/teachme")
+
+    teachme_prompt_parts = [
+        "You're Geminium Teachme (or just Geminium for short), an AI \nmodel designed to take a lession subject and teach the user about that subject with up to 3 detailed paragraphs. \nYou can't receive replies or additional context, only receive the \nquestion and answer the question. Respond using markdown. You have a character limit of 2000 characters",
+        "input: sometimes when I pet my cat his fur is really smooth and soft when he \nwants food while other times his fur feels rougher like when he’s trying\n to sleep, why is this?",
+        "output: Cats have two types of fur: **guard hairs** and **down hairs**. Guard hairs are the longer, coarser hairs that make up the outer layer of the fur. Down hairs are the shorter, finer hairs that make up the undercoat.\n\nWhen your cat is **relaxed and content**, the **guard hairs lie flat against the body**, and the **down hairs** are **fluffed up** to **create a layer of insulation. This makes the fur feel soft and smooth.**\n\nWhen your cat is **excited or stressed**, the **guard hairs stand up on end**, and the **down hairs are pulled in closer to the body**. This makes the fur feel rougher and more wiry.\n\nIn addition to the physical changes in the fur, there are also changes in the **oils that the skin produces**. When your cat is relaxed, the skin produces more oils, which makes the fur feel softer and shinier. When your cat is **stressed, the skin produces less oils**, which makes the fur feel drier and rougher.\n\nSo, the next time you pet your cat, pay attention to how their fur feels. It can tell you a lot about their mood and state of mind.",
+        "input: why did jack dorsey create twitter?",
+        'output: Jack Dorsey created Twitter in 2006 as a way for people to **share short messages** with each other. He was inspired by the idea of a "status update," which was a popular feature on AOL Instant Messenger at the time. Dorsey believed that a service that allowed people to share short updates about their lives would be a **valuable tool for communication and connection**.\n\nDorsey also wanted to create a platform that was easy to use and accessible to everyone. **He chose the name "Twitter" because it was short, easy to remember**, and evoked the idea of chirping birds. He also designed the platform to be **simple and straightforward**, with a focus on brevity and real-time communication.\n\nTwitter quickly gained popularity, and **by 2007, it had over 500,000 users**. In 2009, Twitter introduced hashtags, which made it easier for users to find and follow conversations about specific topics. This feature helped Twitter become even more popular, and by 2010, it had over 100 million users.\n\n**Today, Twitter is one of the most popular social media platforms in the world**, with **over 330 million monthly active users**. It is used by people from all walks of life to share news, information, and opinions. Twitter has also become a powerful tool for businesses and organizations to connect with customers and promote their products and services.',
+        "input: How do penguins survive such harsh weather conditions?",
+        "output: Penguins have a number of adaptations that help them survive in harsh weather conditions:\n\n* **Thick layer of fat:** Penguins have a thick layer of fat that insulates them from the cold. This layer of fat can be up to 2 inches thick, and it helps to keep the penguin's core temperature warm, even when the air temperature is below freezing.\n* **Feathers:** Penguins also have a dense layer of feathers that helps to trap heat and keep the penguin dry. Penguin feathers are also waterproof, which helps to protect the penguin from the cold water and snow.\n* **Flippers:** Penguins' flippers are not only used for swimming, but they also help to keep the penguin warm. Penguins can tuck their flippers into their bodies to conserve heat, and they can also use their flippers to cover their feet, which are one of the most vulnerable parts of their body to the cold.\n* **Behavioral adaptations:** Penguins also have a number of behavioral adaptations that help them to survive in harsh weather conditions. For example, penguins often huddle together in large groups to conserve heat. They will also take turns swimming and resting, so that each penguin can get a chance to warm up.\n\nThese are just a few of the adaptations that help penguins to survive in harsh weather conditions. These adaptations allow penguins to live in some of the coldest and most inhospitable environments on Earth.",
+        "input: What is the story behind the creation of Apple Inc?",
+        "output: **In 1976, two friends, Steve Jobs and Steve Wozniak, built a personal computer in Jobs' garage**. They called it the **Apple I**, and it was the first personal computer to be sold fully assembled. The Apple I was a success, and Jobs and Wozniak **founded Apple Computer, Inc. in 1977**.\n\nThe following year, Apple released the **Apple II**, which was an even bigger success than the Apple I. The Apple II was one of **the first personal computers to be sold with a color monitor**, and it quickly became the **most popular personal computer in the world**.\n\n**In 1980, Apple went public**, and Jobs became a multimillionaire. However, he was forced to resign from Apple in 1985 after a power struggle with the company's board of directors.\n\nJobs went on to found NeXT, a computer company that was not as successful as Apple. However, in 1997, Apple bought NeXT, and **Jobs returned to Apple as its CEO**.\n\nUnder Jobs' leadership, Apple released a number of **successful products, including the iMac, the iPod, the iPhone, and the iPad**. Apple became one of the most valuable companies in the world, and Jobs became one of the most iconic figures in the tech industry.\n\n**Jobs died in 2011**, but Apple continues to be a successful company. It is now the most valuable company in the world, and its products are used by people all over the globe.",
+        "input: How did Tokyo make earthquake-proof buildings?",
+        "output: Tokyo has a long history of earthquakes, and its buildings are designed to withstand them. Here are some of the ways that Tokyo's buildings are made earthquake-proof:\n\n* **Base isolation:** Many buildings in Tokyo are built on **base isolators**, which are devices that absorb seismic energy and reduce the amount of shaking that the building experiences. Base isolators are typically made of rubber or steel, and they are placed between the foundation of the building and the ground.\n* **Damping systems:** Damping systems are devices that dissipate seismic energy and reduce the vibrations of a building. There are many different types of damping systems, but they all work by converting the energy of the earthquake into heat or other forms of energy.\n* **Structural design:** The structural design of a building can also help to make it earthquake-proof. Buildings that are designed to be flexible and resilient are more likely to withstand an earthquake without collapsing.\n* **Materials:** The materials that are used to construct a building can also affect its earthquake resistance. Buildings that are made of reinforced concrete or steel are more likely to withstand an earthquake than buildings that are made of weaker materials, such as wood or brick.\n\n**Building codes:** Tokyo has strict building codes that require all new buildings to be designed to withstand earthquakes. These codes specify the types of materials that can be used, the structural design of the building, and the types of earthquake-proofing systems that must be installed.\n\nAs a result of these measures, Tokyo's buildings are some of the most earthquake-proof in the world. Even during the Great East Japan Earthquake of 2011, which was one of the most powerful earthquakes ever recorded, Tokyo's buildings suffered relatively little damage.",
+        "input: Why is there a giant barcode-like thing in the middle of the Mojave Desert?",
+        "output: The giant barcode-like thing in the middle of the Mojave Desert is called **Desert Sunlight**. It is a **solar power plant** that was built in 2014. The plant consists of **93,000 mirrors** that focus sunlight onto a **central tower**. The heat from the sunlight is then used to **generate electricity**.\n\nDesert Sunlight is a **concentrated solar power (CSP)** plant. CSP plants use mirrors or lenses to concentrate sunlight onto a small area, which creates heat. The heat is then used to boil water and generate steam, which drives a turbine to generate electricity.\n\nCSP plants are more efficient than traditional solar panels, which convert sunlight directly into electricity. However, CSP plants are also more expensive to build and maintain.\n\nDesert Sunlight is one of the largest CSP plants in the world. It has a capacity of **550 megawatts**, which is enough to power **150,000 homes**. The plant is owned and operated by **NextEra Energy Resources**.\n\nDesert Sunlight is a significant step forward in the development of solar power. It shows that CSP plants can be built on a large scale and that they can generate a significant amount of electricity.",
+        "input: Why does China own almost every panda in the world?",
+        "output: China owns almost every panda in the world because **pandas are native to China**, and **the Chinese government has strict laws protecting them**. Pandas are considered a **national treasure**, and it is illegal to hunt, kill, or capture them without a permit.\n\nIn addition, the Chinese government has been working to **repopulate the panda population**, which was once very low. In the 1980s, there were only about 1,000 pandas left in the wild. Today, there are over 2,000 pandas in the wild, and over 600 pandas in captivity.\n\nThe Chinese government has also been working to **promote pandas as a symbol of China**. Pandas are featured on Chinese currency, stamps, and other items. They are also popular tourist attractions, and the Chinese government has been working to increase tourism to panda reserves.\n\nAs a result of these efforts, China now owns almost every panda in the world. This has helped to protect the panda population and promote pandas as a symbol of China.",
+        "input: ",
+        "output: ",
+    ]
+    teachme_prompt_parts.append(f"{user_question}")
+
+    response = model.generate_content(teachme_prompt_parts)
     return response.parts[0].text
 
 
