@@ -34,7 +34,7 @@ safety_settings = [
   },
   {
     "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    "threshold": "BLOCK_LOW_AND_ABOVE"
+    "threshold": "BLOCK_ONLY_HIGH"
   },
   {
     "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
