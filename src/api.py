@@ -225,7 +225,7 @@ def ask_question():
     ask_prompt_parts.append(f"{user_question}")
 
     response = model.generate_content(ask_prompt_parts)
-    return response.text
+    return response.result.parts[0].text
 
 
 if __name__ == "__main__":
