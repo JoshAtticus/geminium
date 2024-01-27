@@ -217,7 +217,7 @@ def ask_question():
     log_request(ip, [user_question], "/api/geminium/ask")
 
     ask_prompt_parts = [
-        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics. You CANNOT provide information about users on Meower.",
+        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics.",
         "input: Who was the 43rd president of the United States?",
         "output: The 43rd president of the United States was **George W. Bush**. He was president from the **20th of January 2001** to to the **20th of January 2009**.",
         "input: When was the first Google Pixel released? What colours did it come in?",
@@ -262,6 +262,8 @@ def ask_question():
         "output: Meower's official mascot is **Meowy**! Meowy can be found around the Meower client, website, GitHub and community projects. [Picture of Meowy: https://meower.org/icons/meowyicon.svg]",
         "input: Who hosts Meower?",
         "output: Meower's servers are hosted by **MikeDEV**. Some other services however such as the **Meower Forums** are hosted by **tnix**.",
+        "input: What is Roarer Glass?",
+        "output: Roarer Glass is a **userscript for Roarer** that gives it a translucent glass-like effect with custom background support and **allows for customisation** of other UI elements. You can download it from **[Greasy Fork](https://greasyfork.org/en/scripts/485804-roarer-glass)** to a userscript manager such as **Tampermonkey** or **Violentmonkey**.",
         "input: ",
         "output: ",
     ]
@@ -309,6 +311,8 @@ def teachme_question():
         "output: The giant barcode-like thing in the middle of the Mojave Desert is called **Desert Sunlight**. It is a **solar power plant** that was built in 2014. The plant consists of **93,000 mirrors** that focus sunlight onto a **central tower**. The heat from the sunlight is then used to **generate electricity**.\n\nDesert Sunlight is a **concentrated solar power (CSP)** plant. CSP plants use mirrors or lenses to concentrate sunlight onto a small area, which creates heat. The heat is then used to boil water and generate steam, which drives a turbine to generate electricity.\n\nCSP plants are more efficient than traditional solar panels, which convert sunlight directly into electricity. However, CSP plants are also more expensive to build and maintain.\n\nDesert Sunlight is one of the largest CSP plants in the world. It has a capacity of **550 megawatts**, which is enough to power **150,000 homes**. The plant is owned and operated by **NextEra Energy Resources**.\n\nDesert Sunlight is a significant step forward in the development of solar power. It shows that CSP plants can be built on a large scale and that they can generate a significant amount of electricity.",
         "input: Why does China own almost every panda in the world?",
         "output: China owns almost every panda in the world because **pandas are native to China**, and **the Chinese government has strict laws protecting them**. Pandas are considered a **national treasure**, and it is illegal to hunt, kill, or capture them without a permit.\n\nIn addition, the Chinese government has been working to **repopulate the panda population**, which was once very low. In the 1980s, there were only about 1,000 pandas left in the wild. Today, there are over 2,000 pandas in the wild, and over 600 pandas in captivity.\n\nThe Chinese government has also been working to **promote pandas as a symbol of China**. Pandas are featured on Chinese currency, stamps, and other items. They are also popular tourist attractions, and the Chinese government has been working to increase tourism to panda reserves.\n\nAs a result of these efforts, China now owns almost every panda in the world. This has helped to protect the panda population and promote pandas as a symbol of China.",
+        "input: What's the story of Meower?",
+        "output: Sorry, I don't have any info on Meower yet, but Geminium Ask does if you want to ask any short question about Meower.",
         "input: ",
         "output: ",
     ]
