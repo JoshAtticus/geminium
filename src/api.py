@@ -65,6 +65,10 @@ limiter = Limiter(app, default_limits=["3 per minute"])
 logs_file = "logs.json"
 tokens_file = "tokens.json"
 
+def is_blocked_ip(ip):
+    with open("blockedips.json") as file:
+        blocked_ips = json.load(file)
+        return ip in blocked_ips
 
 def log_request(ip, prompts, api_command):
     logs = {}
@@ -94,6 +98,8 @@ def is_valid_token(token):
 @limiter.limit("1 per second")
 def generate_theme():
     ip = request.headers.get("cf-connecting-ip")
+    if is_blocked_ip(ip):
+        return jsonify({"error": "Your IP has been blocked"}), 403
     prompts = []
     try:
         # Validate the JSON payload against the schema
@@ -155,6 +161,8 @@ def generate_theme():
 @limiter.limit("1 per second")
 def solve_math():
     ip = request.headers.get("cf-connecting-ip")
+    if is_blocked_ip(ip):
+        return jsonify({"error": "Your IP has been blocked"}), 403
     prompts = []
     try:
         # Validate the JSON payload against the schema
@@ -198,6 +206,8 @@ def solve_math():
 @limiter.limit("1 per second")
 def ask_question():
     ip = request.headers.get("cf-connecting-ip")
+    if is_blocked_ip(ip):
+        return jsonify({"error": "Your IP has been blocked"}), 403
     prompts = []
     try:
         # Validate the JSON payload against the schema
@@ -277,6 +287,8 @@ def ask_question():
 @limiter.limit("1 per second")
 def teachme_question():
     ip = request.headers.get("cf-connecting-ip")
+    if is_blocked_ip(ip):
+        return jsonify({"error": "Your IP has been blocked"}), 403
     prompts = []
     try:
         # Validate the JSON payload against the schema
