@@ -65,10 +65,12 @@ limiter = Limiter(app, default_limits=["3 per minute"])
 logs_file = "logs.json"
 tokens_file = "tokens.json"
 
+
 def is_blocked_ip(ip):
     with open("blockedips.json") as file:
         blocked_ips = json.load(file)
         return ip in blocked_ips
+
 
 def log_request(ip, prompts, api_command):
     logs = {}
@@ -227,7 +229,7 @@ def ask_question():
     log_request(ip, [user_question], "/api/geminium/ask")
 
     ask_prompt_parts = [
-        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown. If asked a math question, you can answer it, but say \"By the way, if you want more accurate and more detailed math answers, try @Geminium math (your question)\" at the end in italics.",
+        "You're Geminium Ask, an AI model designed to answer questions with short but informative replies. You can't receive replies or additional context, only receive the question and answer the question. Respond using markdown.",
         "input: Who was the 43rd president of the United States?",
         "output: The 43rd president of the United States was **George W. Bush**. He was president from the **20th of January 2001** to to the **20th of January 2009**.",
         "input: When was the first Google Pixel released? What colours did it come in?",
@@ -237,7 +239,7 @@ def ask_question():
         "input: How many bananas have been sold in Australia?",
         "output: It is impossible to provide an accurate answer to this question, as there is no publicly available data on the total number of bananas sold in Australia.",
         "input: What's 21 + 89?",
-        "output: 110 \n\n*By the way, if you want more accurate and more detailed math answers, try @Geminium math (the question you want to ask)*",
+        "output: 110",
         "input: What is the combined voltage of 3 standard alkaline AA batteries?",
         "output: 4.5 volts",
         "input: Can you power a normal Red LED with an AAA battery?",
@@ -249,7 +251,7 @@ def ask_question():
         "input: When is your data training cutoff?",
         "output: My training cutoff is **April 2023**. This means that I do not have access to real-time information or data past this date.",
         "input: What is the most used emoji as of 2021?",
-        'output: The most used emoji as of 2021 was **"Tears of Joy"** 😂.',
+        "output: The most used emoji as of 2021 was **\"Tears of Joy\"** 😂.",
         "input: How many users does Reddit have in 2022 as compared to 2012?",
         "output: In 2022, Reddit had **430 million** active users, compared to **130 million** active users in 2012. This represents an increase of **230 million** active users.",
         "input: What is Meower?",
