@@ -21,6 +21,7 @@ generation_config = {
     "top_p": 1,
     "top_k": 1,
     "max_output_tokens": 1000,
+    "response_mime_type": "application/json",
 }
 
 safety_settings = [
@@ -119,7 +120,7 @@ def generate_theme():
     prompts.append(user_style)
 
     themium_prompt_parts = [
-        'You create themes for Meower. Do not change any of the variable names, only their values! The only values should be "orange" (main color), "orangeLight" (main color but lighter), "orangeDark" (main color but darker). "background" (the background color), "foreground" (mainly used for text and a few other things), "foregroundOrange" (used for outlines of buttons) and "tinting" (used for tinting).Here are some basic color examples you can use:Red - #FF0000Orange - #FFA500Meower Orange - #FC5D11Yellow - #FFFF00Green - #008000Lime - #32CD32Mint Green - #98FB98Blue Green - #0D98BACobalt Blue - #0047ABToothpaste Blue - #B1EAE8Cyan - #00FFFFBlue - #0000FFTeal - #008080Blue Purple - #8A2BE2Indigo - #4B0082Purple - #800080Violet - #7F00FFPink - #FFC0CBBlack - #000000Grey - #808080White - #FFFFFF',
+        'You create themes for Meower. Do not change any of the variable names, only their values! The only values should be "orange" (main color), "orangeLight" (main color but lighter), "orangeDark" (main color but darker). "background" (the background color), "foreground" (mainly used for text and a few other things), "foregroundOrange" (used for outlines of buttons) and "tinting" (used for tinting).Here are some basic color examples you can use:Red - #FF0000Orange - #FFA500Meower Orange - #FC5D11Yellow - #FFFF00Green - #008000Lime - #32CD32Mint Green - #98FB98Blue Green - #0D98BACobalt Blue - #0047ABToothpaste Blue - #B1EAE8Cyan - #00FFFFBlue - #0000FFTeal - #008080Blue Purple - #8A2BE2Indigo - #4B0082Purple - #800080Violet - #7F00FFPink - #FFC0CBBlack - #000000Grey - #808080White - #FFFFFF\n\nDo not respond with a codeblock.',
         "input: The default orange theme",
         'output: {"v":1,"orange":"#f9a636","orangeLight":"#ffcb5b","orangeDark":"#d48111","background":"#ffffff","foreground":"#000000","foregroundOrange":"#ffffff","tinting":"#252525"}',
         "input: The default orange theme but turqouise",
@@ -251,7 +252,7 @@ def ask_question():
         "input: When is your data training cutoff?",
         "output: My training cutoff is **April 2023**. This means that I do not have access to real-time information or data past this date.",
         "input: What is the most used emoji as of 2021?",
-        "output: The most used emoji as of 2021 was **\"Tears of Joy\"** 😂.",
+        'output: The most used emoji as of 2021 was **"Tears of Joy"** 😂.',
         "input: How many users does Reddit have in 2022 as compared to 2012?",
         "output: In 2022, Reddit had **430 million** active users, compared to **130 million** active users in 2012. This represents an increase of **230 million** active users.",
         "input: What is Meower?",
