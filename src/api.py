@@ -18,9 +18,9 @@ genai.configure(api_key=api_key)
 
 generation_config = {
     "temperature": 0.9,
-    "top_p": 1,
-    "top_k": 1,
-    "max_output_tokens": 1000,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
     "response_mime_type": "application/json",
 }
 
@@ -32,7 +32,7 @@ safety_settings = [
 ]
 
 model = genai.GenerativeModel(
-    model_name="gemini-pro",
+    model_name="gemini-1.5-pro",
     generation_config=generation_config,
     safety_settings=safety_settings,
 )
